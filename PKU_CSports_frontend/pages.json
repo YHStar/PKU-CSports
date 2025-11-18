@@ -1,5 +1,5 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://doc.dcloud.net.cn/uni-app-x/collocation/pagesjson.html
+	"pages": [
 		{
 			"path": "pages/index/index",
 			"style": {
@@ -13,7 +13,7 @@
 			}
 		},
 		{
-			"path": "pages/forum/forum",
+			"path": "pages/matches/matches",
 			"style": {
 				"navigationBarTitleText": "论坛"
 			}
@@ -25,9 +25,9 @@
 			}
 		},
 		{
-			"path": "pages/forum/post-edit",
+			"path": "pages/news/news-detail",
 			"style": {
-				"navigationBarTitleText": "新建博文"
+				"navigationBarTitleText": "资讯详情"
 			}
 		},
 		{
@@ -63,9 +63,9 @@
 			},
 			{
 				"pagePath": "pages/forum/forum",
-				"iconPath": "static/forum.png",
-				"selectedIconPath": "static/forum-active.png",
-				"text": "论坛"
+				"iconPath": "static/matches.png",
+				"selectedIconPath": "static/mathces-active.png",
+				"text": "赛事"
 			},
 			{
 				"pagePath": "pages/tools/tools",

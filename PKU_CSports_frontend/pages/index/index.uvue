@@ -17,13 +17,13 @@
 		<!-- 前线快讯 -->
 		<view class="news-section">
 			<text class="section-title">前线快讯</text>
-			<view class="news-item">信科开场反客为主，XX禁区内接球爆射破门</view>
+			<view class="news-item" @click="goToNewsDetail(1)">信科开场反客为主，XX禁区内接球爆射破门</view>
 		</view>
 
 		<!-- 赛后战报 -->
 		<view class="news-section">
 			<text class="section-title">赛后战报</text>
-			<view class="news-item">信科 2-1 击败物院，XX梅开二度当选全场最佳</view>
+			<view class="news-item" @click="goToNewsDetail(2)">信科 2-1 击败物院，XX梅开二度当选全场最佳</view>
 		</view>
 
 		<!-- 热门资讯/我的主队入口 -->
@@ -45,6 +45,12 @@ export default {
 		goToMyTeam() {
 			uni.navigateTo({
 				url: '/pages/team/my-team'
+			});
+		},
+		goToNewsDetail(id) {
+			// 跳转到资讯详情页，传递资讯id
+			uni.navigateTo({
+				url: `/pages/news/news-detail?id=${id}`
 			});
 		}
 	},

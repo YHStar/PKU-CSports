@@ -1,0 +1,107 @@
+<template>
+	<view class="container">
+		<view class="news-title">{{ news.title }}</view>
+		<view class="news-content">{{ news.content }}</view>
+
+		<view class="comments-section">
+			<view class="comments-title">评论区</view>
+			<view v-for="(comment, idx) in comments" :key="idx" class="comment-item">
+				<text class="comment-user">{{ comment.user }}</text>
+				<text class="comment-text">{{ comment.text }}</text>
+			</view>
+			<!-- 只允许普通用户评论 -->
+			<view v-if="user.canComment" class="comment-input-bar">
+				<input v-model="newComment" placeholder="写下你的评论..." class="comment-input" />
+				<button @click="submitComment" class="submit-btn">发送</button>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			news: {
+				title: '资讯标题示例',
+				content: '这里是资讯内容，根据id加载实际内容。'
+			},
+			comments: [
+				{ user: '用户A', text: '精彩！' },
+				{ user: '用户B', text: '分析很到位。' }
+			],
+			user: {
+				name: '普通用户',
+				canComment: true // 只允许评论，无发帖权限
+			},
+			newComment: ''
+		}
+	},
+	onLoad(options) {
+		// 根据 options.id 加载资讯内容和评论，实际开发中应请求后端
+		console.log('加载资讯详情，id:', options.id);
+	},
+	methods: {
+		submitComment() {
+			if (!this.newComment) return;
+			this.comments.push({ user: this.user.name, text: this.newComment });
+			this.newComment = '';
+		}
+	}
+}
+</script>
+
+<style>
+.container {
+	padding: 15px;
+	background-color: #f8f8f8;
+	min-height: 100vh;
+}
+.news-title {
+	font-size: 20px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.news-content {
+	font-size: 15px;
+	color: #333;
+	margin-bottom: 20px;
+}
+.comments-section {
+	background: #fff;
+	border-radius: 10px;
+	padding: 15px;
+}
+.comments-title {
+	font-size: 16px;
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.comment-item {
+	margin-bottom: 8px;
+	font-size: 14px;
+	color: #444;
+}
+.comment-user {
+	font-weight: bold;
+	margin-right: 8px;
+}
+.comment-input-bar {
+	display: flex;
+	margin-top: 10px;
+}
+.comment-input {
+	flex: 1;
+	border: 1px solid #eee;
+	border-radius: 5px;
+	padding: 5px 10px;
+	margin-right: 8px;
+}
+.submit-btn {
+	background: #409eff;
+	color: #fff;
+	border-radius: 5px;
+	padding: 5px 15px;
+	font-size: 14px;
+}
+</style>
