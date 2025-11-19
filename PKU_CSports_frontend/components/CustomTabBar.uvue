@@ -12,7 +12,7 @@
     </view>
     
     <!-- 中间圆形突出按钮 -->
-    <view class="tabbar-item home-btn">
+    <view class="tabbar-item home-btn" @click="goToMyTeam">
       <image src="/static/myteam.png" class="home-icon" />
     </view>
     
@@ -73,6 +73,11 @@ export default {
       if (idx !== this.currentIndex) {
         uni.reLaunch({ url: path })
       }
+    },
+    goToMyTeam() {
+      uni.navigateTo({
+        url: '/pages/myteam/myteam'
+      })
     }
   }
 }

@@ -35,6 +35,18 @@
 			"style": {
 				"navigationBarTitleText": "阵容模拟器"
 			}
+		},
+		{
+			"path": "pages/profile/profile",
+			"style": {
+				"navigationBarTitleText": "个人主页"
+			}
+		},
+		{
+			"path": "pages/myteam/myteam",
+			"style": {
+				"navigationBarTitleText": "我的主队"
+			}
 		}
 	],
 	"globalStyle": {

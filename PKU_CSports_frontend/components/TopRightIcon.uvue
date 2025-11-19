@@ -1,12 +1,19 @@
 <template>
-  <view class="top-right-icon">
+  <view class="top-right-icon" @click="goToProfile">
     <image src="/static/logo.png" class="icon-image" />
   </view>
 </template>
 
 <script>
 export default {
-  name: 'TopRightIcon'
+  name: 'TopRightIcon',
+  methods: {
+    goToProfile() {
+      uni.navigateTo({
+        url: '/pages/profile/profile'
+      })
+    }
+  }
 }
 </script>
 
