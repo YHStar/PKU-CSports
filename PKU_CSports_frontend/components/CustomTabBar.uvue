@@ -1,0 +1,142 @@
+<template>
+  <view class="custom-tabbar">
+    <!-- 前两个tab项：首页、数据 -->
+    <view
+      v-for="(item, idx) in tabList.slice(0, 2)"
+      :key="idx"
+      :class="['tabbar-item', { active: idx === currentIndex }]"
+      @click="switchTab(idx, item.pagePath)"
+    >
+      <image :src="idx === currentIndex ? item.selectedIconPath : item.iconPath" class="tabbar-icon" />
+      <text class="tabbar-text">{{ item.text }}</text>
+    </view>
+    
+    <!-- 中间圆形突出按钮 -->
+    <view class="tabbar-item home-btn" @click="goToMyTeam">
+      <image src="/static/myteam.png" class="home-icon" />
+    </view>
+    
+    <!-- 后两个tab项：赛事、工具 -->
+    <view
+      v-for="(item, idx) in tabList.slice(2, 4)"
+      :key="idx + 2"
+      :class="['tabbar-item', { active: (idx + 2) === currentIndex }]"
+      @click="switchTab(idx + 2, item.pagePath)"
+    >
+      <image :src="(idx + 2) === currentIndex ? item.selectedIconPath : item.iconPath" class="tabbar-icon" />
+      <text class="tabbar-text">{{ item.text }}</text>
+    </view>
+  </view>
+</template>
+
+<script>
+export default {
+  name: 'CustomTabBar',
+  props: {
+    currentIndex: {
+      type: Number,
+      default: 0
+    }
+  },
+  data() {
+    return {
+      tabList: [
+        {
+          pagePath: '/pages/index/index',
+          iconPath: '/static/home.png',
+          selectedIconPath: '/static/home-active.png',
+          text: '首页'
+        },
+        {
+          pagePath: '/pages/data/data',
+          iconPath: '/static/data.png',
+          selectedIconPath: '/static/data-active.png',
+          text: '数据'
+        },
+        {
+          pagePath: '/pages/matches/matches',
+          iconPath: '/static/matches.png',
+          selectedIconPath: '/static/matches-active.png',
+          text: '赛事'
+        },
+        {
+          pagePath: '/pages/tools/tools',
+          iconPath: '/static/tool.png',
+          selectedIconPath: '/static/tool-active.png',
+          text: '工具'
+        }
+      ]
+    }
+  },
+  methods: {
+    switchTab(idx, path) {
+      if (idx !== this.currentIndex) {
+        uni.reLaunch({ url: path })
+      }
+    },
+    goToMyTeam() {
+      uni.navigateTo({
+        url: '/pages/myteam/myteam'
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+.custom-tabbar {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  background: #fff;
+  box-shadow: 0 -1px 3px rgba(0,0,0,0.06);
+  z-index: 999;
+  overflow: visible;
+}
+.tabbar-item {
+  flex: 1;
+  text-align: center;
+  line-height: 50px;
+  font-size: 15px;
+  color: #666;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.tabbar-item.active {
+  color: #409eff;
+  font-weight: bold;
+}
+.tabbar-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  margin-bottom: 2px;
+}
+.tabbar-text {
+  font-size: 12px;
+}
+.home-btn {
+  position: relative;
+  top: -10px;
+  background: #fff;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 56px;
+}
+.home-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+</style>

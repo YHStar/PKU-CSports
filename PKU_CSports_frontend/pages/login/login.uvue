@@ -1,0 +1,240 @@
+<template>
+	<view class="container">
+		<!-- 顶部Logo和标题 -->
+		<view class="header">
+			<image src="/static/logo.png" class="logo" />
+			<text class="app-title">PKU CSports</text>
+			<text class="app-subtitle">校园体育平台</text>
+		</view>
+
+		<!-- 登录表单 -->
+		<view class="login-form">
+			<view class="form-item">
+				<text class="label">用户名</text>
+				<input 
+					class="input" 
+					v-model="username" 
+					placeholder="请输入用户名"
+					placeholder-class="placeholder"
+				/>
+			</view>
+			
+			<view class="form-item">
+				<text class="label">密码</text>
+				<input 
+					class="input" 
+					v-model="password" 
+					type="password"
+					placeholder="请输入密码"
+					placeholder-class="placeholder"
+				/>
+			</view>
+
+			<button class="login-btn" @click="handleLogin" :disabled="loading">
+				{{ loading ? '登录中...' : '登录' }}
+			</button>
+
+			<view class="tips" v-if="errorMsg">
+				<text class="error-text">{{ errorMsg }}</text>
+			</view>
+		</view>
+
+		<!-- 底部链接 -->
+		<view class="footer">
+			<text class="footer-text">还没有账号？</text>
+			<text class="link-text">立即注册</text>
+		</view>
+	</view>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			username: '',
+			password: '',
+			loading: false,
+			errorMsg: ''
+		}
+	},
+	methods: {
+		async handleLogin() {
+			// 表单验证
+			if (!this.username || !this.password) {
+				this.errorMsg = '请输入用户名和密码';
+				return;
+			}
+
+			this.loading = true;
+			this.errorMsg = '';
+
+			try {
+				// 调用登录接口
+				const response = await uni.request({
+					url: 'http://localhost:3000/api/auth/login',
+					method: 'POST',
+					header: {
+						'Content-Type': 'application/json'
+					},
+					data: {
+						username: this.username,
+						password: this.password
+					}
+				});
+
+				const [error, res] = response;
+				
+				if (error) {
+					this.errorMsg = '网络请求失败，请检查后端服务';
+					this.loading = false;
+					return;
+				}
+
+				const result = res.data;
+
+				if (result.success) {
+					// 登录成功，保存token和用户信息
+					uni.setStorageSync('token', result.data.token);
+					uni.setStorageSync('userInfo', result.data.user);
+					
+					uni.showToast({
+						title: '登录成功',
+						icon: 'success'
+					});
+
+					// 跳转到首页
+					setTimeout(() => {
+						uni.reLaunch({
+							url: '/pages/index/index'
+						});
+					}, 1000);
+				} else {
+					this.errorMsg = result.message || '登录失败';
+				}
+			} catch (err) {
+				console.error('登录错误:', err);
+				this.errorMsg = '登录失败，请稍后重试';
+			} finally {
+				this.loading = false;
+			}
+		}
+	}
+}
+</script>
+
+<style>
+.container {
+	min-height: 100vh;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 60px 30px 30px 30px;
+}
+
+.header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 60px;
+}
+
+.logo {
+	width: 100px;
+	height: 100px;
+	border-radius: 50%;
+	background: #fff;
+	margin-bottom: 20px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.app-title {
+	font-size: 32px;
+	font-weight: bold;
+	color: #fff;
+	margin-bottom: 8px;
+}
+
+.app-subtitle {
+	font-size: 16px;
+	color: rgba(255,255,255,0.9);
+}
+
+.login-form {
+	width: 100%;
+	background: #fff;
+	border-radius: 15px;
+	padding: 30px 25px;
+	box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.form-item {
+	margin-bottom: 20px;
+}
+
+.label {
+	display: block;
+	font-size: 14px;
+	color: #333;
+	margin-bottom: 8px;
+	font-weight: 500;
+}
+
+.input {
+	width: 100%;
+	height: 45px;
+	background: #f5f5f5;
+	border-radius: 8px;
+	padding: 0 15px;
+	font-size: 15px;
+	color: #333;
+}
+
+.placeholder {
+	color: #999;
+}
+
+.login-btn {
+	width: 100%;
+	height: 48px;
+	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+	color: #fff;
+	border-radius: 8px;
+	font-size: 16px;
+	font-weight: bold;
+	border: none;
+	margin-top: 10px;
+}
+
+.login-btn[disabled] {
+	opacity: 0.6;
+}
+
+.tips {
+	margin-top: 15px;
+	text-align: center;
+}
+
+.error-text {
+	color: #e54d42;
+	font-size: 13px;
+}
+
+.footer {
+	margin-top: 40px;
+	display: flex;
+	align-items: center;
+}
+
+.footer-text {
+	font-size: 14px;
+	color: rgba(255,255,255,0.8);
+	margin-right: 5px;
+}
+
+.link-text {
+	font-size: 14px;
+	color: #fff;
+	font-weight: bold;
+}
+</style>

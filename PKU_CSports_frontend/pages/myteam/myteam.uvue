@@ -1,0 +1,226 @@
+<template>
+	<view class="container">
+		<TopRightIcon />
+		
+		<!-- 主队信息头部 -->
+		<view class="team-header">
+			<image src="/static/logo.png" class="team-logo" />
+			<text class="team-name">我的主队</text>
+			<text class="team-slogan">为你喜爱的球队加油！</text>
+		</view>
+
+		<!-- 赛事信息 -->
+		<view class="section">
+			<view class="section-title">
+				<text class="title-text">近期赛事</text>
+			</view>
+			<view class="match-list">
+				<view v-for="(match, index) in matches" :key="index" class="match-item">
+					<text class="match-time">{{ match.date }} {{ match.time }}</text>
+					<view class="match-info">
+						<text class="team-home">{{ match.home }}</text>
+						<text class="score">{{ match.score }}</text>
+						<text class="team-away">{{ match.away }}</text>
+					</view>
+					<text class="match-status">{{ match.status }}</text>
+				</view>
+			</view>
+		</view>
+
+		<!-- 主队动态 -->
+		<view class="section">
+			<view class="section-title">
+				<text class="title-text">主队动态</text>
+			</view>
+			<view class="post-list">
+				<view v-for="(post, index) in posts" :key="index" class="post-item">
+					<view class="post-header">
+						<image src="/static/logo.png" class="post-avatar" />
+						<view class="post-info">
+							<text class="post-author">{{ post.author }}</text>
+							<text class="post-time">{{ post.time }}</text>
+						</view>
+					</view>
+					<text class="post-content">{{ post.content }}</text>
+				</view>
+			</view>
+		</view>
+
+		<CustomTabBar :currentIndex="-1" />
+	</view>
+</template>
+
+<script>
+import CustomTabBar from '@/components/CustomTabBar.uvue'
+import TopRightIcon from '@/components/TopRightIcon.uvue'
+export default {
+	components: { CustomTabBar, TopRightIcon },
+	data() {
+		return {
+			matches: [
+				{ date: '11.20', time: '14:00', home: '信科', score: 'vs', away: '元培', status: '即将开始' },
+				{ date: '11.18', time: '15:00', home: '信科', score: '2-1', away: '物院', status: '已结束' },
+				{ date: '11.15', time: '16:00', home: '光华', score: '1-1', away: '信科', status: '已结束' }
+			],
+			posts: [
+				{ author: '信科足球队', time: '2小时前', content: '备战周末比赛，全队训练中！💪' },
+				{ author: '信科足球队', time: '1天前', content: '恭喜XX同学打进精彩一球！🎉' },
+				{ author: '信科足球队', time: '3天前', content: '感谢所有球迷的支持，我们会继续努力！⚽' }
+			]
+		}
+	}
+}
+</script>
+
+<style>
+.container {
+	background-color: #f8f8f8;
+	min-height: 100vh;
+	padding-bottom: 60px;
+}
+
+.team-header {
+	background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+	padding: 40px 20px 30px 20px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: #fff;
+}
+
+.team-logo {
+	width: 80px;
+	height: 80px;
+	border-radius: 50%;
+	background: #fff;
+	margin-bottom: 15px;
+	border: 3px solid #fff;
+}
+
+.team-name {
+	font-size: 24px;
+	font-weight: bold;
+	margin-bottom: 8px;
+}
+
+.team-slogan {
+	font-size: 14px;
+	opacity: 0.9;
+}
+
+.section {
+	margin: 15px;
+}
+
+.section-title {
+	margin-bottom: 12px;
+}
+
+.title-text {
+	font-size: 18px;
+	font-weight: bold;
+	color: #333;
+}
+
+.match-list {
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.match-item {
+	padding: 15px;
+	border-bottom: 1px solid #f5f5f5;
+}
+
+.match-item:last-child {
+	border-bottom: none;
+}
+
+.match-time {
+	font-size: 13px;
+	color: #999;
+	display: block;
+	margin-bottom: 8px;
+}
+
+.match-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 6px;
+}
+
+.team-home, .team-away {
+	font-size: 16px;
+	font-weight: bold;
+	color: #333;
+	flex: 1;
+}
+
+.team-away {
+	text-align: right;
+}
+
+.score {
+	font-size: 15px;
+	color: #666;
+	margin: 0 10px;
+}
+
+.match-status {
+	font-size: 12px;
+	color: #409eff;
+}
+
+.post-list {
+	background: #fff;
+	border-radius: 10px;
+	overflow: hidden;
+}
+
+.post-item {
+	padding: 15px;
+	border-bottom: 1px solid #f5f5f5;
+}
+
+.post-item:last-child {
+	border-bottom: none;
+}
+
+.post-header {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.post-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	margin-right: 10px;
+}
+
+.post-info {
+	display: flex;
+	flex-direction: column;
+}
+
+.post-author {
+	font-size: 15px;
+	font-weight: bold;
+	color: #333;
+	margin-bottom: 3px;
+}
+
+.post-time {
+	font-size: 12px;
+	color: #999;
+}
+
+.post-content {
+	font-size: 14px;
+	color: #666;
+	line-height: 1.6;
+}
+</style>

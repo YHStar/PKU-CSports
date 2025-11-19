@@ -1,5 +1,12 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://doc.dcloud.net.cn/uni-app-x/collocation/pagesjson.html
+	"pages": [
+		{
+			"path": "pages/login/login",
+			"style": {
+				"navigationBarTitleText": "登录",
+				"navigationStyle": "custom"
+			}
+		},
 		{
 			"path": "pages/index/index",
 			"style": {
@@ -13,9 +20,9 @@
 			}
 		},
 		{
-			"path": "pages/forum/forum",
+			"path": "pages/matches/matches",
 			"style": {
-				"navigationBarTitleText": "论坛"
+				"navigationBarTitleText": "赛事"
 			}
 		},
 		{
@@ -25,15 +32,27 @@
 			}
 		},
 		{
-			"path": "pages/forum/post-edit",
+			"path": "pages/news/news-detail",
 			"style": {
-				"navigationBarTitleText": "新建博文"
+				"navigationBarTitleText": "资讯详情"
 			}
 		},
 		{
 			"path": "pages/tools/formation-simulator",
 			"style": {
 				"navigationBarTitleText": "阵容模拟器"
+			}
+		},
+		{
+			"path": "pages/profile/profile",
+			"style": {
+				"navigationBarTitleText": "个人主页"
+			}
+		},
+		{
+			"path": "pages/myteam/myteam",
+			"style": {
+				"navigationBarTitleText": "我的主队"
 			}
 		}
 	],
@@ -42,38 +61,6 @@
 		"navigationBarTitleText": "校园体育APP",
 		"navigationBarBackgroundColor": "#F8F8F8",
 		"backgroundColor": "#F8F8F8"
-	},
-	"tabBar": {
-		"color": "#999999",
-		"selectedColor": "#409eff",
-		"borderStyle": "black",
-		"backgroundColor": "#ffffff",
-		"list": [
-			{
-				"pagePath": "pages/index/index",
-				"iconPath": "static/home.png",
-				"selectedIconPath": "static/home-active.png",
-				"text": "首页"
-			},
-			{
-				"pagePath": "pages/data/data",
-				"iconPath": "static/data.png",
-				"selectedIconPath": "static/data-active.png",
-				"text": "数据"
-			},
-			{
-				"pagePath": "pages/forum/forum",
-				"iconPath": "static/forum.png",
-				"selectedIconPath": "static/forum-active.png",
-				"text": "论坛"
-			},
-			{
-				"pagePath": "pages/tools/tools",
-				"iconPath": "static/tool.png",
-				"selectedIconPath": "static/tool-active.png",
-				"text": "工具"
-			}
-		]
 	},
 	"uniIdRouter": {}
 }

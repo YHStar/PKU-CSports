@@ -1,5 +1,6 @@
 <template>
 	<view class="container">
+		<TopRightIcon />
 		<!-- 顶部分类导航（联赛选择） -->
 		<scroll-view direction="vertical" class="tab-scroll">
 			<view v-for="(league, index) in leagues" :key="index" :class="['league-tab', { 'active': currentLeague === index }]" @click="switchLeague(index)">
@@ -33,11 +34,15 @@
 				<text class="col col-goals goals-num">{{ player.goals }}</text>
 			</view>
 		</view>
+		<CustomTabBar :currentIndex="1" />
 	</view>
 </template>
 
 <script>
+import CustomTabBar from '@/components/CustomTabBar.uvue'
+import TopRightIcon from '@/components/TopRightIcon.uvue'
 export default {
+		components: { CustomTabBar, TopRightIcon },
 	data() {
 		return {
 			leagues: ['新生杯', '北大杯甲级', '北大杯乙级', '校友联赛'],

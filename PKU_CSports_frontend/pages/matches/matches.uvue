@@ -1,0 +1,127 @@
+<template>
+	<view class="container">
+		<TopRightIcon />
+		<!-- 顶部标题栏 -->
+		<view class="header">
+			<text class="header-title">赛事</text>
+			<view class="header-icon">⚽</view>
+		</view>
+
+		<!-- 比赛列表 -->
+		<scroll-view scroll-y class="matches-list">
+			<view v-for="(match, idx) in matches" :key="idx" class="match-card">
+				<text class="match-date">{{ match.date }} {{ match.time }}</text>
+				<view class="match-teams">
+					<text class="team">{{ match.home }}</text>
+					<text class="vs">vs</text>
+					<text class="team">{{ match.away }}</text>
+				</view>
+			</view>
+			<view class="dots">...</view>
+		</scroll-view>
+		<CustomTabBar :currentIndex="2" />
+	</view>
+</template>
+
+<script>
+import CustomTabBar from '@/components/CustomTabBar.uvue'
+import TopRightIcon from '@/components/TopRightIcon.uvue'
+export default {
+		components: { CustomTabBar, TopRightIcon },
+	data() {
+		return {
+			matches: [
+				{ date: '11.11', time: '12:00', home: '信科', away: '国关' },
+				{ date: '11.12', time: '14:00', home: '信科Ⅱ', away: '光华Ⅱ' },
+				// ...更多比赛
+			]
+		}
+	}
+}
+</script>
+
+<style>
+.container {
+	background: #f8f8f8;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 18px 16px 8px 16px;
+	background: #fff;
+	font-size: 20px;
+	font-weight: bold;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.header-title {
+	font-size: 20px;
+	font-weight: bold;
+}
+.header-icon {
+	font-size: 22px;
+}
+.matches-list {
+	flex: 1;
+	padding: 10px 0 60px 0;
+}
+.match-card {
+	background: #fff;
+	margin: 10px 16px;
+	border-radius: 10px;
+	padding: 12px 16px;
+	box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.match-date {
+	font-size: 13px;
+	color: #888;
+	margin-bottom: 6px;
+	display: block;
+}
+.match-teams {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.team {
+	font-size: 16px;
+	font-weight: bold;
+	color: #333;
+}
+.vs {
+	font-size: 15px;
+	color: #666;
+	margin: 0 10px;
+}
+.dots {
+	text-align: center;
+	color: #bbb;
+	font-size: 20px;
+	margin: 10px 0;
+}
+.tabbar {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	display: flex;
+	background: #fff;
+	box-shadow: 0 -1px 3px rgba(0,0,0,0.06);
+	z-index: 99;
+	height: 50px;
+}
+.tabbar-item {
+	flex: 1;
+	text-align: center;
+	line-height: 50px;
+	font-size: 15px;
+	color: #666;
+}
+.tabbar-item.active {
+	color: #409eff;
+	font-weight: bold;
+}
+</style>
