@@ -1,5 +1,6 @@
 <template>
 	<view class="container">
+		<TopRightIcon />
 		<!-- 头部今日赛事 -->
 		<view class="match-card">
 			<text class="title">今日赛事</text>
@@ -31,11 +32,15 @@
 			<text class="section-title">我的主队（点击跳转）</text>
 			<text class="more-text">查看全部 ></text>
 		</view>
+		<CustomTabBar :currentIndex="0" />
 	</view>
 </template>
 
 <script>
+import CustomTabBar from '@/components/CustomTabBar.uvue'
+import TopRightIcon from '@/components/TopRightIcon.uvue'
 export default {
+		components: { CustomTabBar, TopRightIcon },
 	data() {
 		return {
 			// 页面数据可以在这里定义

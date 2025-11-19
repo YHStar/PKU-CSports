@@ -1,10 +1,12 @@
 <template>
 	<view class="container">
+		<TopRightIcon />
 		<!-- 顶部导航 Tab -->
 		<view class="tool-tabs">
 			<view v-for="(tab, index) in toolTabs" :key="index" :class="['tab-item', { 'active': currentToolTab === index }]" @click="switchToolTab(index)">
 				{{ tab }}
 			</view>
+				<CustomTabBar :currentIndex="3" />
 		</view>
 
 		<!-- 战术板/阵容模拟器入口（image_827178.png 的主要内容） -->
@@ -33,7 +35,10 @@
 </template>
 
 <script>
+import CustomTabBar from '@/components/CustomTabBar.uvue'
+import TopRightIcon from '@/components/TopRightIcon.uvue'
 export default {
+		components: { CustomTabBar, TopRightIcon },
 	data() {
 		return {
 			toolTabs: ['战术板', '赛程查询', '历史战绩'],
