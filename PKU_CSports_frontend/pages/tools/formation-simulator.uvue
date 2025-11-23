@@ -8,6 +8,12 @@
 
 		<!-- 球场区域 -->
 		<view class="football-field">
+			<view class="center-line"></view>
+			<view class="center-circle"></view>
+			<view class="goal goal-top"></view>
+			<view class="goal goal-bottom"></view>
+			<view class="penalty-area penalty-area-top"></view>
+			<view class="penalty-area penalty-area-bottom"></view>
 			<movable-area class="movable-area">
 				<!-- 已上场球员 -->
 				<movable-view
@@ -19,7 +25,10 @@
 					direction="all"
 					@change="onPlayerMove(index, $event)"
 				>
-					{{ player.name }}
+					<view class="player-icon">{{ player.name }}</view>
+					<view class="return-btn" @click="removeFromField(index)">
+						<text class="arrow-icon">↶</text>
+					</view>
 				</movable-view>
 
 				<text v-if="!lineup.length" class="field-text">
@@ -27,9 +36,30 @@
 				</text>
 			</movable-area>
 		</view>
-
+		
 		<!-- 球员仓库区 -->
 		<view class="player-warehouse">
+				<text class="warehouse-title">球员仓库</text>
+				<view class="form-container">
+					<view class="form-item">
+						<text class="form-label">添加球员</text>
+						<input class="input" v-model="formData.playerName" placeholder="输入球员姓名" />
+					</view>
+					<button type="primary" size="mini" @click="addPlayer">添加到仓库</button>
+				</view>
+				<view class="player-list">
+					<view
+						v-for="(player, index) in players"
+						:key="index"
+						class="player-tag"
+					>
+						<text class="player-name" @click="addToField(player)">{{ player }}</text>
+						<view class="delete-btn" @click="deletePlayer(index)">×</view>
+					</view>
+				</view>
+			</view>
+
+		<!-- <view class="player-warehouse">
 			<text class="warehouse-title">球员仓库</text>
 			<uni-forms :modelValue="formData" ref="form">
 				<uni-forms-item name="playerName" label="添加球员">
@@ -47,12 +77,13 @@
 					{{ player }}
 				</view>
 			</view>
-		</view>
+		</view> -->
 
+		
 		<!-- 底部功能按钮 -->
 		<view class="actions">
 			<button class="action-btn" size="mini" type="default" @click="saveLineup">保存阵容</button>
-			<button class="action-btn" size="mini" type="warn" @click="clearField">清空球场</button>
+			<button class="action-btn" size="mini" type="warn" @click="Field">清空球场</button>
 		</view>
 	</view>
 </template>
@@ -64,7 +95,7 @@ export default {
 			formData: {
 				playerName: ''
 			},
-			players: ['张三', '李四', '王五', '赵六', '钱七'], // 球员仓库
+			players: ['张三', '李四', '王五', '赵六', '钱七'], // 球员仓库			
 			lineup: [] // 上场阵容
 		}
 	},
@@ -79,6 +110,46 @@ export default {
 				uni.showToast({ title: '球员已存在', icon: 'none' })
 			}
 		},
+		// 从球场移除球员（放回仓库）
+		removeFromField(index) {
+			const playerName = this.lineup[index].name
+			uni.showModal({
+				title: '放回仓库',
+				content: `确定要将 ${playerName} 放回球员仓库吗？`,
+				success: (res) => {
+					if (res.confirm) {
+						// 1. 从球场阵容中移除
+						this.lineup.splice(index, 1)
+						// 2. 确保球员在仓库中存在（如果之前被删除了，就重新添加）
+						if (!this.players.includes(playerName)) {
+							this.players.push(playerName)
+						}
+						uni.showToast({ 
+							title: `${playerName} 已放回仓库`, 
+							icon: 'success',
+							duration: 1500
+						})
+					}
+				}
+			})
+		},
+				
+		// 删除球员
+		deletePlayer(index) {
+			uni.showModal({
+				title: '确认删除',
+				content: `确定要删除球员 ${this.players[index]} 吗？`,
+				success: (res) => {
+					if (res.confirm) {
+						// 同时从球场中移除该球员
+						this.lineup = this.lineup.filter(p => p.name !== this.players[index])
+						// 从仓库中删除
+						this.players.splice(index, 1)
+						uni.showToast({ title: '删除成功', icon: 'success' })
+					}
+				}
+			})
+		},
 
 		// 点击球员添加到球场
 		addToField(playerName) {
@@ -90,6 +161,11 @@ export default {
 			const randomX = Math.random() * 200 + 80
 			const randomY = Math.random() * 200 + 50
 			this.lineup.push({ name: playerName, x: randomX, y: randomY })
+			// 从球员仓库移除该球员
+			const index = this.players.indexOf(playerName);
+						if (index > -1) {
+							this.players.splice(index, 1); 
+						}
 		},
 
 		// 拖动事件更新球员位置
@@ -105,7 +181,12 @@ export default {
 		},
 
 		// 清空球场
-		clearField() {
+		Field() {
+			this.lineup.forEach(p => {
+				if (!this.players.includes(p.name)) {
+					this.players.push(p.name);
+				}
+			});
 			this.lineup = []
 			uni.showToast({ title: '球场已清空', icon: 'none' })
 		}
@@ -149,9 +230,16 @@ export default {
 	height: 100%;
 	position: relative;
 }
+/* 球员图标容器 - 扩大容器让按钮可以显示在外面 */
+.player-icon-wrapper {
+	position: relative;
+	width: 80rpx;  /* 扩大容器 */
+	height: 80rpx;
+}
+/* 球员图标样式 */
 .player-icon {
-	width: 60rpx;
-	height: 60rpx;
+	width: 80rpx;
+	height: 80rpx;
 	background-color: rgba(255, 255, 255, 0.9);
 	border-radius: 50%;
 	display: flex;
@@ -161,6 +249,38 @@ export default {
 	color: #333;
 	font-weight: bold;
 	border: 2rpx solid #eee;
+	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+	position: absolute;
+	top: 10rpx;    /* 在容器中居中 */
+	left: 10rpx;
+}
+/* 在场球员返回按钮 - 悬浮在右上角外部 */
+.return-btn {
+	position: absolute;
+	top: -5rpx;    /* 移到圆形外部 */
+	right: -5rpx;   /* 移到圆形外部 */
+	width: 36rpx;
+	height: 36rpx;
+	border-radius: 50%;
+	background: linear-gradient(135deg, #2196F3, #1976D2);
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 18rpx;
+	font-weight: bold;
+	cursor: pointer;
+	box-shadow: 0 2rpx 8rpx rgba(33, 150, 243, 0.5);
+	z-index: 20;   /* 确保在最上层 */
+	border: 2rpx solid white;
+	transition: all 0.3s ease;
+}
+.return-btn:active {
+	transform: scale(0.9);
+	background: linear-gradient(135deg, #1976D2, #1565C0);
+}
+.arrow-icon {
+	transform: scale(0.9);
 }
 .field-text {
 	color: #fff;
@@ -170,7 +290,68 @@ export default {
 	font-size: 14px;
 	opacity: 0.9;
 }
+/* 中圈 */
+.center-circle {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 80px;
+	height: 80px;
+	border: 2px solid white;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+}
 
+/* 中线（水平线） */
+.center-line {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 100%;
+	height: 2px;
+	background: white;
+	transform: translateY(-50%);
+}
+
+/* 球门基础样式 */
+.goal {
+	position: absolute;
+	left: 50%;
+	width: 20%;
+	height: 5%;
+	border: 3px solid white;
+	transform: translateX(-50%);
+}
+.goal-top {
+	top: 10px;
+	border-bottom: none;
+	border-radius: 8px 8px 0 0;
+}
+
+.goal-bottom {
+	bottom: 10px;
+	border-top: none;
+	border-radius: 0 0 8px 8px;
+}
+/* 禁区 */
+.penalty-area {
+	position: absolute;
+	left: 50%;
+	width: 40%;
+	height: 15%;
+	border: 2px solid white;
+	transform: translateX(-50%);
+}
+
+.penalty-area-top {
+	top: 10px;
+	border-top: none;
+}
+
+.penalty-area-bottom {
+	bottom: 10px;
+	border-bottom: none;
+}
 /* 仓库 */
 .player-warehouse {
 	background-color: #fff;
@@ -184,6 +365,20 @@ export default {
 	font-weight: bold;
 	margin-bottom: 10px;
 	display: block;
+}
+.form-container {
+  margin-bottom: 15px;
+}
+
+.form-item {
+  margin-bottom: 12px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
 }
 .input {
 	border: 1px solid #eee;
@@ -200,20 +395,68 @@ export default {
 	padding-top: 10px;
 	border-top: 1px solid #eee;
 }
+/* 球员标签容器 */
+.player-tag-wrapper {
+	position: relative;
+	display: inline-block; /* 让每个标签单独一行 */
+}
+/* 球员标签样式 */
 .player-tag {
 	background-color: #f0f0f0;
 	color: #333;
-	padding: 5px 10px;
-	border-radius: 15px;
-	font-size: 13px;
+	padding: 8px 15px;
+	border-radius: 20px;
+	font-size: 14px;
+	cursor: pointer;
+	margin: 5px;
+	display: inline-block;
+	min-width: 60px;
+	text-align: center;
+	transition: all 0.3s ease;
 }
+.player-tag:active {
+	background-color: #e0e0e0;
+		transform: scale(0.95);
+}
+.player-name {
+	flex: 1;
+	cursor: pointer;
+}
+
+.delete-btn {
+	position: absolute;
+	top: 3px;
+	right: 3px;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: #ff4757;
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	font-weight: bold;
+	cursor: pointer;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+	transition: all 0.3s ease;
+	z-index: 10;
+}
+
+.delete-btn:active {
+	background-color: #ff3742;
+	transform: scale(0.9);
+}
+
 
 /* 按钮 */
 .actions {
 	display: flex;
 	justify-content: space-around;
+	gap: 20px; 
 }
 .action-btn {
-	width: 45%;
+	flex: 0 0 auto;
+	width: 120px;
 }
 </style>
