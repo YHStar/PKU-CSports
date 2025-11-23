@@ -19,13 +19,14 @@
 				<movable-view
 					v-for="(player, index) in lineup"
 					:key="index"
-					class="player-icon"
+					class="player-icon-wrapper"
 					:x="player.x"
 					:y="player.y"
 					direction="all"
 					@change="onPlayerMove(index, $event)"
+					@click="colorPlayer(index)"
 				>
-					<view class="player-icon">{{ player.name }}</view>
+					<view class="player-icon":class="{'colored':player.colored}">{{ player.name }}</view>
 					<view class="return-btn" @click="removeFromField(index)">
 						<text class="arrow-icon">↶</text>
 					</view>
@@ -160,7 +161,12 @@ export default {
 			// 默认位置随机分布在中场区域
 			const randomX = Math.random() * 200 + 80
 			const randomY = Math.random() * 200 + 50
-			this.lineup.push({ name: playerName, x: randomX, y: randomY })
+			this.lineup.push({ 
+				name: playerName,
+				x: randomX,
+				y: randomY,
+				colored: false //默认为白色背景
+			})
 			// 从球员仓库移除该球员
 			const index = this.players.indexOf(playerName);
 						if (index > -1) {
@@ -172,6 +178,11 @@ export default {
 		onPlayerMove(index, e) {
 			this.lineup[index].x = e.detail.x
 			this.lineup[index].y = e.detail.y
+		},
+		
+		//切换球员颜色
+		colorPlayer(index){
+			this.$set(this.lineup[index],'colored',!this.lineup[index].colored)
 		},
 
 		// 保存阵容
@@ -240,7 +251,7 @@ export default {
 .player-icon {
 	width: 80rpx;
 	height: 80rpx;
-	background-color: rgba(255, 255, 255, 0.9);
+	background-color: rgba(255, 255, 255, 0.9); /* 白色背景 */
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
@@ -253,6 +264,11 @@ export default {
 	position: absolute;
 	top: 10rpx;    /* 在容器中居中 */
 	left: 10rpx;
+}
+/* 彩色背景状态 */
+.player-icon.colored {
+	background-color: rgba(255, 235, 59, 0.9); /* 黄色背景 */
+	color: #333; /* 保持文字颜色不变 */
 }
 /* 在场球员返回按钮 - 悬浮在右上角外部 */
 .return-btn {
