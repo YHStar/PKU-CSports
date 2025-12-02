@@ -1,37 +1,57 @@
 <template>
 	<view class="container">
 		<TopRightIcon />
-		<!-- 头部今日赛事 -->
+
+		<!-- 今日赛事（可左右滑动） -->
 		<view class="match-card">
 			<text class="title">今日赛事</text>
-			<view class="match-info">
-				<!-- 示例：比赛卡片 -->
-				<view class="match-item">
-					<text class="team-name">信科</text>
-					<text class="score">0 - 0</text>
-					<text class="team-name">元培</text>
-				</view>
-				<view class="status-live">直播中 90'</view>
-			</view>
+
+			<swiper class="match-swiper" circular autoplay :interval="5000">
+				<swiper-item v-for="(item, index) in todayMatches" :key="index">
+					<view class="match-info">
+						<view class="team-row">
+							<text class="team-name">{{ item.home }}</text>
+							<text class="score">{{ item.score }}</text>
+							<text class="team-name">{{ item.away }}</text>
+						</view>
+						<view class="status-live">{{ item.status }}</view>
+					</view>
+				</swiper-item>
+			</swiper>
 		</view>
 
 		<!-- 前线快讯 -->
 		<view class="news-section">
 			<text class="section-title">前线快讯</text>
-			<view class="news-item" @click="goToNewsDetail(1)">信科开场反客为主，XX禁区内接球爆射破门</view>
+			<view 
+				class="news-item"
+				v-for="(news, index) in newsFlash"
+				:key="index" 
+				@click="goToNewsDetail(news.id)"
+			>
+				{{ news.title }}
+			</view>
 		</view>
 
 		<!-- 赛后战报 -->
 		<view class="news-section">
 			<text class="section-title">赛后战报</text>
-			<view class="news-item" @click="goToNewsDetail(2)">信科 2-1 击败物院，XX梅开二度当选全场最佳</view>
+			<view 
+				class="news-item"
+				v-for="(report, index) in postReports"
+				:key="index"
+				@click="goToNewsDetail(report.id)"
+			>
+				{{ report.title }}
+			</view>
 		</view>
 
-		<!-- 热门资讯/我的主队入口 -->
+		<!-- 我的主队 -->
 		<view class="more-info" @click="goToMyTeam">
-			<text class="section-title">我的主队（点击跳转）</text>
+			<text class="section-title">我的主队</text>
 			<text class="more-text">查看全部 ></text>
 		</view>
+
 		<CustomTabBar :currentIndex="0" />
 	</view>
 </template>
@@ -39,104 +59,153 @@
 <script>
 import CustomTabBar from '@/components/CustomTabBar.uvue'
 import TopRightIcon from '@/components/TopRightIcon.uvue'
+
 export default {
-		components: { CustomTabBar, TopRightIcon },
+	components: { CustomTabBar, TopRightIcon },
+
 	data() {
 		return {
-			// 页面数据可以在这里定义
+			// 需要替换成后端接口返回的数据
+			todayMatches: [
+				{ home: "信科", away: "元培", score: "0 - 0", status: "直播中 90'" },
+				{ home: "物院", away: "化院", score: "1 - 2", status: "已结束" }
+			],
+
+			newsFlash: [
+				{ id: 1, title: "信科开局强势，禁区爆射破门！" },
+				{ id: 2, title: "物院控球率提升，比赛进入胶着状态" }
+			],
+
+			postReports: [
+				{ id: 3, title: "信科 2-1 击败物院，XX梅开二度！" },
+				{ id: 4, title: "元培逆转局势，最终3-2险胜信院!" }
+			]
 		}
 	},
+
 	methods: {
 		goToMyTeam() {
-			uni.navigateTo({
-				url: '/pages/team/my-team'
-			});
+			uni.navigateTo({ url: '/pages/myteam/myteam' })
 		},
 		goToNewsDetail(id) {
-			// 跳转到资讯详情页，传递资讯id
 			uni.navigateTo({
 				url: `/pages/news/news-detail?id=${id}`
 			});
 		}
 	},
-	// 生命周期钩子
+
 	onLoad() {
-		console.log('首页加载完成，准备加载今日赛事数据。');
+		console.log("首页加载完成，准备请求后端赛事数据...");
+		// TODO: 未来接入真实 API
 	}
 }
 </script>
 
+
 <style>
 .container {
 	padding: 10px;
-	background-color: #f8f8f8;
+	background-color: #f5f6fa;
 	min-height: 100vh;
 }
+
+/* 今日赛事卡片 */
 .match-card {
 	background-color: #fff;
 	padding: 15px;
-	border-radius: 10px;
-	margin-bottom: 10px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+	border-radius: 14px;
+	margin-bottom: 15px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
+
 .title {
+	font-size: 18px;
+	font-weight: 700;
+	color: #333;
+	margin-bottom: 10px;
+	display: block;
+	align-items: center;
+}
+
+/* swiper */
+.match-swiper {
+	height: 80px;
+}
+
+.match-info {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 10px 0;
+}
+
+.team-row {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-around;
+	align-items: center;
+	font-size: 20px;
+	margin-bottom: 8px;
+}
+
+.team-name {
+	font-weight: 600;
+	color: #555;
+}
+
+.score {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.status-live {
+	color: #e54d42;
+	font-size: 12px;
+	padding: 4px 10px;
+	border: 1px solid #e54d42;
+	border-radius: 8px;
+}
+
+/* 新闻模块 */
+.news-section {
+	background-color: #fff;
+	padding: 15px;
+	border-radius: 12px;
+	margin-bottom: 15px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.section-title {
 	font-size: 18px;
 	font-weight: bold;
 	color: #333;
 	margin-bottom: 10px;
 	display: block;
 }
-.match-info {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 10px 0;
-}
-.match-item {
-	display: flex;
-	justify-content: space-around;
-	width: 100%;
-	font-size: 16px;
-	margin-bottom: 5px;
-}
-.status-live {
-	color: #e54d42;
-	font-size: 12px;
-	padding: 3px 8px;
-	border: 1px solid #e54d42;
-	border-radius: 5px;
-}
 
-.news-section {
-	background-color: #fff;
-	padding: 15px;
-	border-radius: 10px;
-	margin-bottom: 10px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-.section-title {
-	font-size: 16px;
-	font-weight: bold;
-	color: #333;
-	margin-bottom: 10px;
-	display: block;
-}
 .news-item {
-	font-size: 14px;
+	font-size: 15px;
 	color: #666;
-	padding: 5px 0;
+	padding: 10px 0;
 	border-bottom: 1px dashed #eee;
 }
+
+/* 我的主队 */
 .more-info {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	padding: 15px;
 	background-color: #fff;
-	border-radius: 10px;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
+
 .more-text {
 	color: #409eff;
 	font-size: 14px;
 }
+
 </style>
