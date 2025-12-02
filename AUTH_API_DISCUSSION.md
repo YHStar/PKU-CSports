@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 ## 登录与鉴权（供与后端讨论）
 
 本文档用于前端与后端对接时快速确认登录/鉴权相关接口、请求/响应格式、安全要求与测试要点。
@@ -7,7 +6,6 @@
 
 ### 1) 登录（必需）
 - 路径：`POST /api/auth/login`
-=======
 # AUTH API Discussion
 
 目的：为前后端联调准备清晰的登录/鉴权接口规范、示例与联调要点，便于快速对接与测试。
@@ -38,12 +36,11 @@
 
 1) 登录（必需）
 - 路径：`POST /api/v1/auth/login`
->>>>>>> main
+
 - 请求体（JSON）：
 
 ```
 {
-<<<<<<< HEAD
   "username": "...",
   "password": "..."
 }
@@ -64,7 +61,6 @@
       "avatar": "..."
     },
     "expiresIn": 3600
-=======
   "username": "",
   "password": ""
 }
@@ -80,12 +76,11 @@
     "refreshToken": "<refresh_token_optional>",
     "expiresIn": 3600,
     "user": { "id":"123", "username":"zhangsan", "roles":["user"], "avatar":"/..." }
->>>>>>> main
+
   }
 }
 ```
 
-<<<<<<< HEAD
 - 失败示例：
   - 认证失败：HTTP 401
     ```json
@@ -108,7 +103,6 @@
   "success": true,
   "data": { "id": "...", "username": "...", "roles": ["user"], "email": "...", "avatar": "..." }
 }
-=======
 - 失败示例（HTTP 401）：
 ```
 { "success": false, "code": "AUTH_INVALID_CREDENTIALS", "message": "用户名或密码错误" }
@@ -126,12 +120,11 @@
 - 成功示例：
 ```
 { "success": true, "data": { "id":"123","username":"zhangsan","roles":["user"],"email":"x@pku.edu.cn" } }
->>>>>>> main
+
 ```
 
 ---
 
-<<<<<<< HEAD
 ### 3) 刷新 token（推荐）
 - 路径：`POST /api/auth/refresh`
 - 请求：`{ "refreshToken": "..." }` 或后端使用 HttpOnly cookie
@@ -191,7 +184,6 @@
 POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
-=======
 3) 刷新 token（推荐）
 - 路径：`POST /api/v1/auth/refresh`
 - 请求体：
@@ -257,20 +249,19 @@ POST http://localhost:3000/api/v1/auth/login
 Content-Type: application/json
 
 ```
->>>>>>> main
+
+main
 {
   "username": "testuser",
   "password": "password123"
 }
 ```
 
-<<<<<<< HEAD
 - 获取当前用户：
 
 ```
 GET http://localhost:3000/api/auth/me
 Authorization: Bearer <access_token>
-=======
 GET http://localhost:3000/api/v1/auth/me
 Authorization: Bearer <access_token>
 
@@ -279,16 +270,14 @@ Content-Type: application/json
 
 ```
 { "refreshToken": "<refresh_token>" }
->>>>>>> main
+
 ```
 
 ---
 
-<<<<<<< HEAD
 如需我把这些示例同时加入仓库根目录下的 `requests_test.http`（或生成一个新的）以便后端直接运行测试，我可以一并创建。
 
 请确认文件名与格式是否满意，或告诉我需要补充/删减的点。
-=======
 11) 建议补充（可选）
 - 错误 code 列表（`AUTH_INVALID_CREDENTIALS`, `AUTH_TOKEN_EXPIRED`, `AUTH_ACCOUNT_LOCKED`, `VALIDATION_ERROR` 等）
 - API 返回示例加入 `requestId` 与 `code` 有助于前端做更精确的错误处理与国际化
@@ -297,4 +286,4 @@ Content-Type: application/json
 ---
 
 如需我把这个文档调整成 OpenAPI 草案或把 `requests_test.http` 一并创建，请回复我想要的下一步。
->>>>>>> main
+
