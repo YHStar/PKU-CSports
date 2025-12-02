@@ -275,7 +275,7 @@ export default {
 	border-radius: 50%;
 	background: #ddd;
 }
-}
+
 .player-name {
 	margin-left: 6px;
 	font-size: 14px;
