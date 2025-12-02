@@ -1,5 +1,10 @@
 <template>
 	<view class="container">
+		<!-- 自定义顶部导航栏 -->
+		<view class="nav-bar">
+		    <view class="nav-bar-status"></view>
+		    <view class="nav-bar-title">数据中心</view>
+		</view>
 		<TopRightIcon />
 
 		<!-- 联赛选择 -->
@@ -68,7 +73,6 @@
 		<CustomTabBar :currentIndex="1" />
 	</view>
 </template>
-
 
 
 <script>
@@ -262,6 +266,7 @@ export default {
 /* 球员信息 */
 .player-info {
 	display: flex;
+	flex-direction: row;
 	align-items: center;
 }
 .avatar {
@@ -269,6 +274,7 @@ export default {
 	height: 32px;
 	border-radius: 50%;
 	background: #ddd;
+}
 }
 .player-name {
 	margin-left: 6px;

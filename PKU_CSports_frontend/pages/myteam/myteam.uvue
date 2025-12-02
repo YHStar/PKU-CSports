@@ -146,8 +146,7 @@ export default {
 
 .match-info {
 	display: flex;
-	flex-direction: row;
-	justify-content: space-around;
+	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 6px;
 }

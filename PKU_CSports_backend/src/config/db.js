@@ -5,7 +5,7 @@ const { Pool } = require('pg');
 const pool = new Pool({
   host: process.env.PG_HOST || 'localhost',
   user: process.env.PG_USER || 'postgres',
-  password: process.env.PG_PASSWORD || 'jjh20040306', // <-- 修改为你的 PostgreSQL 密码
+  password: process.env.PG_PASSWORD || 'huajinaiqing0063', // <-- 修改为你的 PostgreSQL 密码
   database: process.env.PG_DATABASE || 'csports_db',       // <-- 修改为你的数据库名
   port: process.env.PG_PORT ? parseInt(process.env.PG_PORT) : 5432,
   max: 10,
