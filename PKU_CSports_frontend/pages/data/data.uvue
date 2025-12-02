@@ -1,164 +1,289 @@
 <template>
 	<view class="container">
+		<!-- 自定义顶部导航栏 -->
+		<view class="nav-bar">
+		    <view class="nav-bar-status"></view>
+		    <view class="nav-bar-title">数据中心</view>
+		</view>
 		<TopRightIcon />
-		<!-- 顶部分类导航（联赛选择） -->
-		<scroll-view direction="vertical" class="tab-scroll">
-			<view v-for="(league, index) in leagues" :key="index" :class="['league-tab', { 'active': currentLeague === index }]" @click="switchLeague(index)">
+
+		<!-- 联赛选择 -->
+		<scroll-view scroll-x class="league-scroll">
+			<view
+				v-for="(league, index) in leagues"
+				:key="index"
+				:class="['league-item', { active: currentLeague === index }]"
+				@click="switchLeague(index)"
+			>
 				{{ league }}
 			</view>
 		</scroll-view>
 
-		<!-- 球员/球队/积分榜切换 -->
+		<!-- 数据类别切换 -->
 		<view class="data-tabs">
-			<view v-for="(tab, index) in dataTabs" :key="index" :class="['data-tab-item', { 'active': currentDataTab === index }]" @click="switchDataTab(index)">
+			<view
+				v-for="(tab, index) in dataTabs"
+				:key="index"
+				:class="['data-tab-item', { active: currentDataTab === index }]"
+				@click="switchDataTab(index)"
+			>
 				{{ tab }}
 			</view>
 		</view>
 
-		<!-- 排行榜展示（以射手榜为例，参考 image_82717b.png） -->
-		<view class="ranking-list">
-			<view class="list-header">
-				<text class="col col-rank">排名</text>
-				<text class="col col-player">球员</text>
-				<text class="col col-dept">院系</text>
-				<text class="col col-goals">进球数</text>
-			</view>
-			<view v-for="(player, index) in rankingData" :key="index" class="list-item">
-				<text class="col col-rank">{{ player.rank }}</text>
-				<view class="col col-player-info">
-					<!-- 球员头像占位 -->
-					<view class="avatar-placeholder"></view>
-					<text class="player-name">{{ player.name }}</text>
+		<!-- 排行榜卡片 -->
+		<view class="ranking-card">
+			<view class="ranking-header">
+				<view
+					v-for="(col, idx) in rankingConfig.columns"
+					:key="idx"
+					class="ranking-col header"
+					:style="{ width: col.width }"
+				>
+					{{ col.label }}
 				</view>
-				<text class="col col-dept">{{ player.department }}</text>
-				<text class="col col-goals goals-num">{{ player.goals }}</text>
+			</view>
+
+			<view
+				v-for="(row, idx) in rankingData"
+				:key="idx"
+				class="ranking-row"
+			>
+				<view
+					v-for="(col, cIdx) in rankingConfig.columns"
+					:key="cIdx"
+					class="ranking-col"
+					:style="{ width: col.width }"
+				>
+					<!-- 渲染不同类型数据 -->
+					<view v-if="col.key === 'player'" class="player-info">
+						<image :src="row.avatar || defaultAvatar" class="avatar" />
+						<text class="player-name">{{ row.name }}</text>
+					</view>
+
+					<text v-else-if="col.key === 'rank'" :class="['rank-text', rankColor(row.rank)]">
+						{{ row.rank }}
+					</text>
+
+					<text v-else>{{ row[col.key] }}</text>
+				</view>
 			</view>
 		</view>
+
 		<CustomTabBar :currentIndex="1" />
 	</view>
 </template>
 
+
 <script>
 import CustomTabBar from '@/components/CustomTabBar.uvue'
 import TopRightIcon from '@/components/TopRightIcon.uvue'
+
 export default {
-		components: { CustomTabBar, TopRightIcon },
+	components: { CustomTabBar, TopRightIcon },
+
 	data() {
 		return {
-			leagues: ['新生杯', '北大杯甲级', '北大杯乙级', '校友联赛'],
-			currentLeague: 1, // 默认选中“北大杯甲级”
+			leagues: ['新生杯', '北大杯甲级', '北大杯乙级'],
+			currentLeague: 1,
+
 			dataTabs: ['球员', '球队', '积分'],
-			currentDataTab: 0, // 默认选中“球员”
-			// 示例数据，实际应从后端获取
-			rankingData: [
-				{ rank: 1, name: '张三', department: '计算机系', goals: 12 },
-				{ rank: 2, name: '李四', department: '数学系', goals: 9 },
-				{ rank: 3, name: '王五', department: '物理系', goals: 8 },
-				{ rank: 4, name: '赵六', department: '化学系', goals: 7 },
-			]
+			currentDataTab: 0,
+
+			defaultAvatar: '/static/default-avatar.png',
+
+			// 表结构（后端可扩展）
+			rankingConfig: {
+				type: 'player',
+				columns: [
+					{ key: 'rank', label: '排名', width: '15%' },
+					{ key: 'player', label: '球员', width: '40%' },
+					{ key: 'department', label: '院系', width: '25%' },
+					{ key: 'goals', label: '进球', width: '20%' }
+				]
+			},
+
+			// 示例数据
+			rankingData: []
 		}
 	},
+
 	methods: {
-		switchLeague(index) {
-			this.currentLeague = index;
-			console.log(`切换到联赛: ${this.leagues[index]}`);
-			// TODO: 根据联赛加载对应数据
+		switchLeague(idx) {
+			this.currentLeague = idx
+			this.fetchRankingData()
 		},
-		switchDataTab(index) {
-			this.currentDataTab = index;
-			console.log(`切换到数据类型: ${this.dataTabs[index]}`);
-			// TODO: 根据数据类型（球员/球队/积分）加载对应数据
+
+		switchDataTab(idx) {
+			this.currentDataTab = idx
+
+			// 动态切换展示结构（可扩展）
+			const tab = this.dataTabs[idx]
+
+			if (tab === '球员') {
+				this.rankingConfig = {
+					type: 'player',
+					columns: [
+						{ key: 'rank', label: '排名', width: '15%' },
+						{ key: 'player', label: '球员', width: '40%' },
+						{ key: 'department', label: '院系', width: '25%' },
+						{ key: 'goals', label: '进球', width: '20%' }
+					]
+				}
+			} else if (tab === '球队') {
+				this.rankingConfig = {
+					type: 'team',
+					columns: [
+						{ key: 'rank', label: '排名', width: '20%' },
+						{ key: 'team', label: '球队', width: '40%' },
+						{ key: 'points', label: '积分', width: '20%' },
+						{ key: 'goals', label: '进球', width: '20%' }
+					]
+				}
+			} else if (tab === '积分') {
+				this.rankingConfig = {
+					type: 'points',
+					columns: [
+						{ key: 'rank', label: '排名', width: '20%' },
+						{ key: 'team', label: '球队', width: '40%' },
+						{ key: 'points', label: '积分', width: '20%' },
+						{ key: 'wins', label: '胜场', width: '20%' }
+					]
+				}
+			}
+
+			this.fetchRankingData()
+		},
+
+		// ⭐ 可接入后端的统一数据请求函数
+		fetchRankingData() {
+			console.log('请求数据:', {
+				league: this.leagues[this.currentLeague],
+				type: this.dataTabs[this.currentDataTab]
+			})
+
+			// TODO: uni.request 请求后端接口
+			// 示例数据：
+			this.rankingData = [
+				{ rank: 1, name: '张三', department: '计算机系', goals: 12, avatar: '' },
+				{ rank: 2, name: '李四', department: '数学系', goals: 9, avatar: '' },
+				{ rank: 3, name: '王五', department: '物理系', goals: 8, avatar: '' }
+			]
+		},
+
+		rankColor(rank) {
+			if (rank === 1) return 'rank-1'
+			if (rank === 2) return 'rank-2'
+			if (rank === 3) return 'rank-3'
+			return ''
 		}
+	},
+
+	onLoad() {
+		this.fetchRankingData()
 	}
 }
 </script>
 
+
 <style>
 .container {
-	background-color: #f8f8f8;
+	background: #f5f6fa;
 	min-height: 100vh;
+	padding-bottom: 60px;
 }
-/* 联赛选择 Tab 样式 */
-.tab-scroll {
+
+/* --- 联赛 Tab --- */
+.league-scroll {
 	white-space: nowrap;
-	width: 100%;
-	background-color: #fff;
+	display: flex;
 	padding: 10px 0;
-	margin-bottom: 10px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	background: #fff;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	flex-direction: row;
 }
-.league-tab {
+.league-item {
 	display: inline-block;
-	padding: 5px 15px;
+	padding: 8px 18px;
 	margin: 0 5px;
-	font-size: 14px;
+	border-radius: 20px;
+	background: #f2f2f2;
 	color: #666;
-	border-bottom: 2px solid transparent;
+	font-size: 14px;
 }
-.league-tab.active {
-	color: #409eff;
-	border-bottom: 2px solid #409eff;
-	font-weight: bold;
+.league-item.active {
+	background: #409eff;
+	color: #fff;
 }
-/* 球员/球队/积分 Tab 样式 */
+
+/* --- 数据类型 Tab --- */
 .data-tabs {
 	display: flex;
-	background-color: #fff;
-	padding: 10px 0;
-	margin-bottom: 10px;
+	background: #fff;
+	margin-top: 10px;
+	flex-direction: row;
 }
 .data-tab-item {
 	flex: 1;
 	text-align: center;
-	padding: 5px 0;
-	font-size: 15px;
+	padding: 12px 0;
 	color: #666;
+	font-size: 16px;
 }
 .data-tab-item.active {
-	color: #333;
+	color: #409eff;
 	font-weight: bold;
 	border-bottom: 3px solid #409eff;
 }
 
-/* 排行榜样式 */
-.ranking-list {
-	background-color: #fff;
-	border-radius: 10px;
-	margin: 0 10px;
-	overflow: hidden;
+/* --- 排行榜卡片 --- */
+.ranking-card {
+	background: #fff;
+	margin: 12px;
+	padding-bottom: 8px;
+	border-radius: 12px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
-.list-header, .list-item {
+
+.ranking-header,
+.ranking-row {
 	display: flex;
 	padding: 12px 10px;
 	border-bottom: 1px solid #eee;
+	flex-direction: row;
+}
+.ranking-header {
+	background: #f7f8fa;
+	font-weight: 600;
+	color: #333;
+}
+
+.ranking-col {
+	font-size: 14px;
+	text-align: center;
+}
+
+/* 球员信息 */
+.player-info {
+	display: flex;
+	flex-direction: row;
 	align-items: center;
 }
-.list-header {
-	font-weight: bold;
-	color: #333;
-	background-color: #f5f5f5;
-}
-.list-item {
-	color: #666;
-}
-.col {
-	text-align: center;
-	font-size: 14px;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.col-rank { width: 10%; }
-.col-player { width: 35%; display: flex; align-items: center; text-align: left; }
-.col-dept { width: 35%; }
-.col-goals { width: 20%; }
-
-.player-name { margin-left: 5px; }
-.avatar-placeholder {
-	width: 30px;
-	height: 30px;
-	background-color: #ccc;
+.avatar {
+	width: 32px;
+	height: 32px;
 	border-radius: 50%;
+	background: #ddd;
 }
-.goals-num { color: #409eff; font-weight: bold; }
+
+.player-name {
+	margin-left: 6px;
+	font-size: 14px;
+}
+
+/* 排名颜色 */
+.rank-text.rank-1 { color: #FFD700; font-weight: bold; }
+.rank-text.rank-2 { color: #C0C0C0; font-weight: bold; }
+.rank-text.rank-3 { color: #CD7F32; font-weight: bold; }
+
 </style>

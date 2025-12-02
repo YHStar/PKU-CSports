@@ -9,6 +9,11 @@
 				<CustomTabBar :currentIndex="3" />
 		</view>
 
+		<!-- 发布按钮 -->
+		<view class="header-actions">
+			<button class="publish-btn" @click="goToCreatePost">发布</button>
+		</view>
+
 		<!-- 战术板/阵容模拟器入口（image_827178.png 的主要内容） -->
 		<view class="tool-section">
 			<view class="tool-title">阵容模拟</view>
@@ -57,9 +62,15 @@ export default {
 				url: '/pages/tools/formation-simulator'
 			});
 		}
+		,
+		goToCreatePost() {
+			// 跳转到创建帖子/发布页面
+			uni.navigateTo({ url: '/pages/createPost/createPost' });
+		}
 	}
 }
 </script>
+
 
 <style>
 .container {
@@ -137,5 +148,19 @@ export default {
 	font-size: 15px;
 	color: #333;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* 发布按钮样式 */
+.header-actions {
+	display:flex;
+	justify-content:flex-end;
+	margin-bottom:12px;
+}
+.publish-btn {
+	background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+	color:#fff;
+	padding:8px 14px;
+	border-radius:8px;
+	font-size:14px;
 }
 </style>

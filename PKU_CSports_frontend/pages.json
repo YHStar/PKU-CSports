@@ -10,25 +10,29 @@
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "首页"
+				"navigationBarTitleText": "首页",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/data/data",
 			"style": {
-				"navigationBarTitleText": "数据中心"
+				"navigationBarTitleText": "数据中心",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/matches/matches",
 			"style": {
-				"navigationBarTitleText": "赛事"
+				"navigationBarTitleText": "赛事",
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/tools/tools",
 			"style": {
-				"navigationBarTitleText": "工具箱"
+				"navigationBarTitleText": "工具箱",
+				"navigationStyle": "custom"
 			}
 		},
 		{
@@ -41,6 +45,13 @@
 			"path": "pages/tools/formation-simulator",
 			"style": {
 				"navigationBarTitleText": "阵容模拟器"
+			}
+		},
+		{
+			"path": "pages/createPost/createPost",
+			"style": {
+				"navigationBarTitleText": "发布内容",
+				"navigationStyle": "custom"
 			}
 		},
 		{
