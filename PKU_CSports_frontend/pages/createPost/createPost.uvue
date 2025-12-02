@@ -1,0 +1,195 @@
+<template>
+  <view class="page">
+    <view class="header">
+      <text class="title">发布内容</text>
+    </view>
+
+    <view class="editor-card">
+      <textarea
+        class="content-input"
+        v-model="content"
+        placeholder="说点什么吧..."
+        autoHeight
+      />
+
+      <view class="controls">
+        <view class="tags">
+          <view class="tag" v-for="(t, i) in tags" :key="t">
+            <text>{{ t }}</text>
+            <text class="remove" @click="removeTag(i)">×</text>
+          </view>
+          <input
+            class="tag-input"
+            v-model="tagInput"
+            placeholder="添加话题 (回车/添加)"
+          />
+          <button class="add-tag" @click="addTag">添加</button>
+        </view>
+
+        <view class="media-actions">
+          <button @click="chooseImage">添加图片/GIF</button>
+          <button @click="chooseVideo">添加视频</button>
+          <button @click="toggleEmoji">表情</button>
+        </view>
+      </view>
+
+      <view class="media-list">
+        <view class="media-item" v-for="(m, idx) in media" :key="m.path">
+          <image v-if="m.type==='image'" :src="m.path" class="media-thumb" mode="aspectFill" />
+          <video v-else-if="m.type==='video'" :src="m.path" class="media-thumb" controls />
+          <text class="media-remove" @click="removeMedia(idx)">删除</text>
+        </view>
+      </view>
+
+      <view v-if="showEmoji" class="emoji-picker">
+        <text
+          class="emoji"
+          v-for="e in emojis"
+          :key="e"
+          @click="insertEmoji(e)"
+        >{{ e }}</text>
+      </view>
+
+      <view class="submit-row">
+        <text class="error" v-if="errorMsg">{{ errorMsg }}</text>
+        <button class="submit-btn" :disabled="loading" @click="submitPost">
+          {{ loading ? '发布中...' : '发布' }}
+        </button>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      content: '',
+      tags: [],
+      tagInput: '',
+      media: [], // { type: 'image'|'video', path }
+      showEmoji: false,
+      emojis: ['😀','😃','😂','😍','👍','🔥','🎉','🤔','🙏','💯'],
+      loading: false,
+      errorMsg: ''
+    }
+  },
+  methods: {
+    addTag() {
+      const t = (this.tagInput || '').trim();
+      if (!t) return;
+      if (this.tags.includes(t)) {
+        this.errorMsg = '话题已存在';
+        return;
+      }
+      this.tags.push(t);
+      this.tagInput = '';
+      this.errorMsg = '';
+    },
+    removeTag(i) {
+      this.tags.splice(i,1);
+    },
+    async chooseImage() {
+      try {
+        const res = await new Promise((resolve, reject) => {
+          uni.chooseImage({ count: 9, success: resolve, fail: reject })
+        });
+        const paths = res.tempFilePaths || res.tempFiles && res.tempFiles.map(f=>f.path) || [];
+        paths.forEach(p => this.media.push({ type: 'image', path: p }));
+      } catch (err) {
+        console.warn('chooseImage cancelled or failed', err);
+      }
+    },
+    async chooseVideo() {
+      try {
+        const res = await new Promise((resolve, reject) => {
+          uni.chooseVideo({ success: resolve, fail: reject })
+        });
+        const path = res.tempFilePath || res.tempFilePath;
+        if (path) this.media.push({ type: 'video', path });
+      } catch (err) {
+        console.warn('chooseVideo cancelled or failed', err);
+      }
+    },
+    removeMedia(idx) {
+      this.media.splice(idx, 1);
+    },
+    toggleEmoji() {
+      this.showEmoji = !this.showEmoji;
+    },
+    insertEmoji(e) {
+      this.content = (this.content || '') + e;
+      this.showEmoji = false;
+    },
+    async submitPost() {
+      if (!this.content.trim() && this.media.length === 0) {
+        this.errorMsg = '请输入内容或添加媒体';
+        return;
+      }
+      this.loading = true;
+      this.errorMsg = '';
+
+      try {
+        // TODO: 实现真正的上传逻辑：先上传 media 到后端获取 URL，再把 content/tags/mediaUrls 发送到 posts API
+        // 目前提供占位的本地演示逻辑
+        const payload = {
+          content: this.content,
+          tags: this.tags,
+          media: this.media.map(m => ({ type: m.type, path: m.path }))
+        };
+
+        // 示例请求（后端需实现 /api/posts 接口）
+        const res = await new Promise((resolve, reject) => {
+          uni.request({
+            url: 'http://localhost:3000/api/posts',
+            method: 'POST',
+            header: { 'Content-Type': 'application/json' },
+            data: payload,
+            success: resolve,
+            fail: reject
+          });
+        });
+
+        const result = res[1] && res[1].data ? res[1].data : res.data || {};
+        if (result && result.success) {
+          uni.showToast({ title: '发布成功', icon: 'success' });
+          setTimeout(() => {
+            uni.navigateBack();
+          }, 800);
+        } else {
+          this.errorMsg = result.message || '发布失败';
+        }
+      } catch (err) {
+        console.error('submitPost error', err);
+        this.errorMsg = '发布出错，请稍后重试';
+      } finally {
+        this.loading = false;
+      }
+    }
+  }
+}
+</script>
+
+<style>
+.page { padding: 12px; background-color: #f5f7fa; min-height: 100vh; }
+.header { padding: 6px 0 12px; }
+.title { font-size: 20px; font-weight: 700; }
+.editor-card { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+.content-input { width: 100%; min-height: 120px; font-size: 15px; padding: 10px; border-radius: 8px; background: #fafafa; border: 1px solid #eee; }
+.controls { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
+.tags { display:flex; align-items:center; gap:8px; flex-wrap: wrap; }
+.tag { background:#eef6ff; padding:6px 8px; border-radius:16px; display:flex; align-items:center; gap:6px; }
+.tag .remove { margin-left:6px; color:#999; }
+.tag-input { border:1px dashed #ddd; padding:6px 8px; border-radius:8px; }
+.add-tag { background:#409eff; color:#fff; padding:6px 10px; border-radius:8px; }
+.media-actions { display:flex; gap:8px; margin-top:6px; }
+.media-list { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+.media-item { position:relative; }
+.media-thumb { width:120px; height:80px; border-radius:8px; }
+.media-remove { position:absolute; right:4px; top:4px; background: rgba(0,0,0,0.5); color:#fff; padding:2px 6px; border-radius:12px; font-size:12px; }
+.emoji-picker { margin-top:10px; padding:8px; background:#fafafa; border-radius:8px; display:flex; gap:8px; flex-wrap:wrap; }
+.emoji { font-size:20px; padding:6px; }
+.submit-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
+.submit-btn { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; padding:8px 18px; border-radius:8px; }
+.error { color:#e54d42; }
+</style>

@@ -48,6 +48,13 @@
 			}
 		},
 		{
+			"path": "pages/createPost/createPost",
+			"style": {
+				"navigationBarTitleText": "发布内容",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/profile/profile",
 			"style": {
 				"navigationBarTitleText": "个人主页"
