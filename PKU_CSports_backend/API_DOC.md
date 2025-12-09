@@ -94,4 +94,53 @@ Content-Type: application/json
 
 ---
 
+## 五、已扩展接口（资讯/赛程/榜单/评论）
+
+### 1) 资讯 News
+- 列表：`GET /api/news?type=flash|report|post|all&tag=&page=1&pageSize=10`
+- 详情：`GET /api/news/:id`
+- 创建：`POST /api/news`（需角色 association/admin），body: `{title,content,type,tags[],cover}`
+- 更新：`PATCH /api/news/:id`（需角色 association/admin）
+
+### 2) 赛程 Matches
+- 列表：`GET /api/matches?status=&league=&round=&page=1&pageSize=20`
+- 详情：`GET /api/matches/:id`（含 lineup: starters/bench）
+- 录入比分：`POST /api/matches/:id/result`（association/admin）`{score_home,score_away,status}`
+- 录入阵容：`POST /api/matches/:id/lineup`（association/admin）`{lineup:[{player_id,side,is_starter}]}`
+
+### 3) 榜单 Standings
+- 积分榜：`GET /api/standings?league=`
+- 球员榜：`GET /api/standings/players?league=&sort=goals|assists`
+
+### 4) 评论 Comments
+- 列表：`GET /api/comments/:postId`
+- 发表：`POST /api/comments/:postId`（登录）`{content,parentId}`
+
+---
+
+## 六、运行与测试
+1. 安装依赖：`npm install`
+2. 准备数据库：创建 PostgreSQL 库 `csports_db`，执行 `db/schema.sql`
+3. 环境变量（.env 可选）：
+```
+PG_HOST=localhost
+PG_USER=postgres
+PG_PASSWORD=xxxx
+PG_DATABASE=csports_db
+PG_PORT=5432
+JWT_SECRET=your_secret
+```
+4. 启动：`node src/app.js`
+5. 测试：可用 `requests_test.http` 或 curl，例如：
+```
+GET http://localhost:3000/api/news
+POST http://localhost:3000/api/news
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{ "title":"示例战报","content":"内容","type":"report","tags":["热门"] }
+```
+
+---
+
 如需更多接口或有任何问题，请联系后端开发者。

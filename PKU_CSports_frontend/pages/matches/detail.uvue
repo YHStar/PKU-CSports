@@ -1,0 +1,164 @@
+<template>
+	<view class="container">
+		<view class="card">
+			<view class="row space">
+				<text class="date">{{ match.date }} {{ match.time }}</text>
+				<text class="status" :class="statusClass">{{ match.status }}</text>
+			</view>
+			<view class="teams">
+				<view class="team" @click="goTeam(match.home.id)">
+					<image :src="match.home.logo" class="logo" />
+					<text class="name">{{ match.home.name }}</text>
+				</view>
+				<view class="score">{{ match.score.home }} - {{ match.score.away }}</view>
+				<view class="team" @click="goTeam(match.away.id)">
+					<image :src="match.away.logo" class="logo" />
+					<text class="name">{{ match.away.name }}</text>
+				</view>
+			</view>
+			<text class="venue">场地：{{ match.venue }}</text>
+		</view>
+
+		<view class="card">
+			<text class="section-title">首发阵容</text>
+			<view class="lineup">
+				<view class="side">
+					<text class="side-title">{{ match.home.name }}</text>
+					<view v-for="p in match.home.starters" :key="p.id" class="player">
+						<text class="num">#{{ p.number }}</text>
+						<text class="pname" @click="goPlayer(p)">{{ p.name }}</text>
+					</view>
+				</view>
+				<view class="side">
+					<text class="side-title">{{ match.away.name }}</text>
+					<view v-for="p in match.away.starters" :key="p.id" class="player">
+						<text class="num">#{{ p.number }}</text>
+						<text class="pname" @click="goPlayer(p)">{{ p.name }}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+
+		<view class="card">
+			<text class="section-title">替补阵容</text>
+			<view class="lineup">
+				<view class="side">
+					<view v-for="p in match.home.bench" :key="p.id" class="player">
+						<text class="num">#{{ p.number }}</text>
+						<text class="pname" @click="goPlayer(p)">{{ p.name }}</text>
+					</view>
+				</view>
+				<view class="side">
+					<view v-for="p in match.away.bench" :key="p.id" class="player">
+						<text class="num">#{{ p.number }}</text>
+						<text class="pname" @click="goPlayer(p)">{{ p.name }}</text>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+export default {
+	data() {
+		return {
+			match: {
+				id: '',
+				date: '10-17',
+				time: '19:00',
+				venue: '邱德拔B2综合训练大厅',
+				status: '已结束',
+				score: { home: 4, away: 2 },
+				home: {
+					id: 'teamA',
+					name: '信工联队',
+					logo: '/static/logo.png',
+					starters: [
+						{ id: 'p1', name: '张俊哲', number: 9 },
+						{ id: 'p2', name: '王锐杰', number: 7 }
+					],
+					bench: [{ id: 'p3', name: '高闻锴', number: 11 }]
+				},
+				away: {
+					id: 'teamB',
+					name: '经数联队',
+					logo: '/static/logo.png',
+					starters: [
+						{ id: 'p4', name: '王俣涵', number: 10 },
+						{ id: 'p5', name: '王品澄', number: 6 }
+					],
+					bench: [{ id: 'p6', name: '王羲羽', number: 8 }]
+				}
+			}
+		}
+	},
+	computed: {
+		statusClass() {
+			if (this.match.status === '直播中') return 'live'
+			if (this.match.status.indexOf('结束') > -1) return 'done'
+			return 'pending'
+		}
+	},
+	onLoad(options) {
+		if (options.id) this.match.id = options.id
+		// TODO: 根据 id 调用后端获取赛事详情与阵容
+	},
+	methods: {
+		goTeam(teamId) {
+			uni.navigateTo({ url: '/pages/myteam/myteam?teamId=' + teamId })
+		},
+		goPlayer(p) {
+			uni.showToast({ title: `查看球员 ${p.name}`, icon: 'none' })
+			// 可跳转到球员档案页面（未来扩展）
+		}
+	}
+}
+</script>
+
+<style>
+.container {
+	padding: 12px;
+	background: #f5f6fa;
+	min-height: 100vh;
+}
+.card {
+	background: #fff;
+	border-radius: 12px;
+	padding: 12px;
+	box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+	margin-bottom: 12px;
+}
+.row {
+	display: flex;
+	align-items: center;
+}
+.space {
+	justify-content: space-between;
+}
+.date { color: #666; font-size: 13px; }
+.status { font-size: 13px; padding: 4px 8px; border-radius: 8px; }
+.status.live { background: #ffecec; color: #e54d42; }
+.status.pending { background: #e8f2ff; color: #3c7dff; }
+.status.done { background: #f0f0f0; color: #666; }
+.teams {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 10px 0;
+}
+.team { display: flex; flex-direction: column; align-items: center; }
+.logo { width: 52px; height: 52px; border-radius: 50%; background: #f2f2f2; }
+.name { margin-top: 6px; font-weight: 600; color: #333; }
+.score { font-size: 22px; font-weight: 800; color: #111; }
+.venue { color: #888; font-size: 12px; }
+.section-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: #333; }
+.lineup { display: flex; gap: 16px; }
+.side { flex: 1; background: #f8f9fb; border-radius: 10px; padding: 10px; }
+.side-title { font-weight: 700; margin-bottom: 6px; display: block; }
+.player { display: flex; align-items: center; padding: 6px 0; border-bottom: 1px solid #eee; }
+.player:last-child { border-bottom: none; }
+.num { width: 34px; color: #888; }
+.pname { color: #333; }
+</style>
+

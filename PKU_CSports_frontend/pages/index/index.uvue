@@ -22,7 +22,10 @@
 
 		<!-- 前线快讯 -->
 		<view class="news-section">
-			<text class="section-title">前线快讯</text>
+			<view class="section-header" @click="goToNewsList('flash')">
+				<text class="section-title">前线快讯</text>
+				<text class="more-link">更多 ></text>
+			</view>
 			<view 
 				class="news-item"
 				v-for="(news, index) in newsFlash"
@@ -35,7 +38,10 @@
 
 		<!-- 赛后战报 -->
 		<view class="news-section">
-			<text class="section-title">赛后战报</text>
+			<view class="section-header" @click="goToNewsList('report')">
+				<text class="section-title">赛后战报</text>
+				<text class="more-link">更多 ></text>
+			</view>
 			<view 
 				class="news-item"
 				v-for="(report, index) in postReports"
@@ -87,6 +93,11 @@ export default {
 	methods: {
 		goToMyTeam() {
 			uni.navigateTo({ url: '/pages/myteam/myteam' })
+		},
+		goToNewsList(type) {
+			uni.navigateTo({
+				url: `/pages/news/news-list?type=${type || ''}`
+			})
 		},
 		goToNewsDetail(id) {
 			uni.navigateTo({
@@ -181,8 +192,17 @@ export default {
 	font-size: 18px;
 	font-weight: bold;
 	color: #333;
+}
+.section-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 	margin-bottom: 10px;
-	display: block;
+}
+
+.more-link {
+	font-size: 13px;
+	color: #409eff;
 }
 
 .news-item {

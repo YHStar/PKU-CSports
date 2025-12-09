@@ -42,6 +42,13 @@
 			}
 		},
 		{
+			"path": "pages/news/news-list",
+			"style": {
+				"navigationBarTitleText": "资讯列表",
+				"navigationStyle": "custom"
+			}
+		},
+		{
 			"path": "pages/tools/formation-simulator",
 			"style": {
 				"navigationBarTitleText": "阵容模拟器"
@@ -64,6 +71,12 @@
 			"path": "pages/myteam/myteam",
 			"style": {
 				"navigationBarTitleText": "我的主队"
+			}
+		},
+		{
+			"path": "pages/matches/detail",
+			"style": {
+				"navigationBarTitleText": "赛事详情"
 			}
 		}
 	],

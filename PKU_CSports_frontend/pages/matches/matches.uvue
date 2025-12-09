@@ -7,15 +7,26 @@
 			<view class="header-icon">⚽</view>
 		</view>
 
+		<!-- 筛选标签 -->
+		<scroll-view scroll-x class="filter-bar">
+			<view
+				v-for="tag in tags"
+				:key="tag"
+				:class="['filter-chip',{active: activeTag===tag}]"
+				@click="toggleTag(tag)"
+			>{{ tag }}</view>
+		</scroll-view>
+
 		<!-- 比赛列表 -->
 		<scroll-view scroll-y class="matches-list">
-			<view v-for="(match, idx) in matches" :key="idx" class="match-card">
-				<text class="match-date">{{ match.date }} {{ match.time }}</text>
+			<view v-for="(match, idx) in filteredMatches" :key="idx" class="match-card" @click="goDetail(match.id)">
+				<text class="match-date">{{ match.date }} {{ match.time }} · {{ match.venue }}</text>
 				<view class="match-teams">
 					<text class="team">{{ match.home }}</text>
 					<text class="vs">vs</text>
 					<text class="team">{{ match.away }}</text>
 				</view>
+				<text class="match-status" :class="statusClass(match.status)">{{ match.status }}</text>
 			</view>
 			<view class="dots">...</view>
 		</scroll-view>
@@ -30,11 +41,35 @@ export default {
 		components: { CustomTabBar, TopRightIcon },
 	data() {
 		return {
+			tags: ['全部','直播','已结束','新生杯','北大杯'],
+			activeTag: '全部',
 			matches: [
-				{ date: '11.11', time: '12:00', home: '信科', away: '国关' },
-				{ date: '11.12', time: '14:00', home: '信科Ⅱ', away: '光华Ⅱ' },
-				// ...更多比赛
+				{ id: 'm1', date: '10.17', time: '19:00', home: '信工联队', away: '元社联队', status: '已结束', venue: '邱德拔B2', tag: '新生杯' },
+				{ id: 'm2', date: '10.18', time: '20:00', home: '一地花生', away: '经数联队', status: '直播中', venue: '邱德拔B2', tag: '新生杯' },
+				{ id: 'm3', date: '10.19', time: '18:00', home: '信科Ⅱ', away: '光华Ⅱ', status: '未开始', venue: '五四操场', tag: '北大杯' }
 			]
+		}
+	}
+	,
+	computed: {
+		filteredMatches() {
+			if (this.activeTag === '全部') return this.matches
+			if (this.activeTag === '直播') return this.matches.filter(m => m.status === '直播中')
+			if (this.activeTag === '已结束') return this.matches.filter(m => m.status.indexOf('结束')>-1)
+			return this.matches.filter(m => m.tag === this.activeTag)
+		}
+	},
+	methods: {
+		toggleTag(tag) {
+			this.activeTag = tag
+		},
+		goDetail(id) {
+			uni.navigateTo({ url: `/pages/matches/detail?id=${id}` })
+		},
+		statusClass(status) {
+			if (status === '直播中') return 'live'
+			if (status.indexOf('结束') > -1) return 'done'
+			return 'pending'
 		}
 	}
 }
@@ -49,7 +84,7 @@ export default {
 }
 .header {
 	display: flex;
-	justify-content: space-between;
+	justify-content: space-around;
 	align-items: center;
 	padding: 18px 16px 8px 16px;
 	background: #fff;
@@ -67,6 +102,25 @@ export default {
 .matches-list {
 	flex: 1;
 	padding: 10px 0 60px 0;
+}
+.filter-bar {
+	white-space: nowrap;
+	flex-direction: row;
+	background: #fff;
+	padding: 10px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.filter-chip {
+	display: inline-block;
+	padding: 8px 14px;
+	margin-right: 8px;
+	border-radius: 18px;
+	background: #f2f2f2;
+	color: #666;
+}
+.filter-chip.active {
+	background: #409eff;
+	color: #fff;
 }
 .match-card {
 	background: #fff;
@@ -102,6 +156,12 @@ export default {
 	font-size: 20px;
 	margin: 10px 0;
 }
+.match-status {
+	font-size: 12px;
+	color: #409eff;
+}
+.match-status.live { color: #e54d42; }
+.match-status.done { color: #666; }
 .tabbar {
 	position: fixed;
 	bottom: 0;
