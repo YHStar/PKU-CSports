@@ -9,8 +9,8 @@
 				<CustomTabBar :currentIndex="3" />
 		</view>
 
-		<!-- 发布按钮 -->
-		<view class="header-actions">
+		<!-- 发布按钮（仅协会/管理员） -->
+		<view class="header-actions" v-if="canPublish">
 			<button class="publish-btn" @click="goToCreatePost">发布</button>
 		</view>
 
@@ -43,12 +43,22 @@
 import CustomTabBar from '@/components/CustomTabBar.uvue'
 import TopRightIcon from '@/components/TopRightIcon.uvue'
 export default {
-		components: { CustomTabBar, TopRightIcon },
+	components: { CustomTabBar, TopRightIcon },
 	data() {
 		return {
 			toolTabs: ['战术板', '赛程查询', '历史战绩'],
 			currentToolTab: 0,
+			userRole: 'user'
 		}
+	},
+	computed: {
+		canPublish() {
+			return this.userRole === 'association' || this.userRole === 'admin'
+		}
+	},
+	onShow() {
+		const info = uni.getStorageSync('userInfo') || {}
+		this.userRole = info.role || 'user'
 	},
 	methods: {
 		switchToolTab(index) {
@@ -64,6 +74,10 @@ export default {
 		}
 		,
 		goToCreatePost() {
+			if (!this.canPublish) {
+				uni.showToast({ title: '仅协会方/管理员可发布', icon: 'none' })
+				return
+			}
 			// 跳转到创建帖子/发布页面
 			uni.navigateTo({ url: '/pages/createPost/createPost' });
 		}

@@ -5,3 +5,54 @@ Content-Type: application/json
   "username": "testuser",
   "password": "password123"
 }
+
+###
+# 新闻列表示例
+GET http://localhost:3000/api/news?type=flash&page=1&pageSize=5
+
+###
+# 创建新闻（需 token）
+POST http://localhost:3000/api/news
+Authorization: Bearer REPLACE_WITH_TOKEN
+Content-Type: application/json
+
+{
+  "title": "示例战报",
+  "content": "战报内容......",
+  "type": "report",
+  "tags": ["热门","进球"]
+}
+
+###
+# 赛程列表
+GET http://localhost:3000/api/matches?status=&league=&round=
+
+###
+# 获取赛程详情
+GET http://localhost:3000/api/matches/1
+
+###
+# 录入比分（需 token）
+POST http://localhost:3000/api/matches/1/result
+Authorization: Bearer REPLACE_WITH_TOKEN
+Content-Type: application/json
+
+{
+  "score_home": 3,
+  "score_away": 2,
+  "status": "已结束"
+}
+
+###
+# 获取积分榜
+GET http://localhost:3000/api/standings?league=新生杯
+
+###
+# 评论
+POST http://localhost:3000/api/comments/1
+Authorization: Bearer REPLACE_WITH_TOKEN
+Content-Type: application/json
+
+{
+  "content": "写得不错！"
+}

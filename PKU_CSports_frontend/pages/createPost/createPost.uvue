@@ -71,7 +71,21 @@ export default {
       showEmoji: false,
       emojis: ['😀','😃','😂','😍','👍','🔥','🎉','🤔','🙏','💯'],
       loading: false,
-      errorMsg: ''
+      errorMsg: '',
+      userRole: 'user'
+    }
+  },
+  computed: {
+    canPublish() {
+      return this.userRole === 'association' || this.userRole === 'admin'
+    }
+  },
+  onShow() {
+    const info = uni.getStorageSync('userInfo') || {}
+    this.userRole = info.role || 'user'
+    if (!this.canPublish) {
+      uni.showToast({ title: '仅协会方/管理员可发布', icon: 'none' })
+      setTimeout(() => uni.navigateBack(), 800)
     }
   },
   methods: {
@@ -171,25 +185,123 @@ export default {
 </script>
 
 <style>
-.page { padding: 12px; background-color: #f5f7fa; min-height: 100vh; }
-.header { padding: 6px 0 12px; }
-.title { font-size: 20px; font-weight: 700; }
-.editor-card { background: #fff; border-radius: 12px; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
-.content-input { width: 100%; min-height: 120px; font-size: 15px; padding: 10px; border-radius: 8px; background: #fafafa; border: 1px solid #eee; }
-.controls { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
-.tags { display:flex; align-items:center; gap:8px; flex-wrap: wrap; }
-.tag { background:#eef6ff; padding:6px 8px; border-radius:16px; display:flex; align-items:center; gap:6px; }
-.tag .remove { margin-left:6px; color:#999; }
-.tag-input { border:1px dashed #ddd; padding:6px 8px; border-radius:8px; }
-.add-tag { background:#409eff; color:#fff; padding:6px 10px; border-radius:8px; }
-.media-actions { display:flex; gap:8px; margin-top:6px; }
-.media-list { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-.media-item { position:relative; }
-.media-thumb { width:120px; height:80px; border-radius:8px; }
-.media-remove { position:absolute; right:4px; top:4px; background: rgba(0,0,0,0.5); color:#fff; padding:2px 6px; border-radius:12px; font-size:12px; }
-.emoji-picker { margin-top:10px; padding:8px; background:#fafafa; border-radius:8px; display:flex; gap:8px; flex-wrap:wrap; }
-.emoji { font-size:20px; padding:6px; }
-.submit-row { display:flex; justify-content:space-between; align-items:center; margin-top:12px; }
-.submit-btn { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:#fff; padding:8px 18px; border-radius:8px; }
-.error { color:#e54d42; }
+.page { 
+	padding: 12px; 
+	background-color: #f5f7fa; 
+	min-height: 100vh; 
+}
+.header { 
+	padding: 6px 0 12px; 
+}
+.title { 
+	font-size: 20px; 
+	font-weight: 700; 
+}
+.editor-card { 
+	background: #fff; 
+	border-radius: 12px; 
+	padding: 12px; 
+	box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+}
+.content-input { 
+	width: 100%; 
+	min-height: 120px; 
+	font-size: 15px; 
+	padding: 10px; 
+	border-radius: 8px; 
+	background: #fafafa; 
+	border: 1px solid #eee; 
+}
+.controls { 
+	argin-top: 10px; 
+	display: flex; 
+	flex-direction: column; 
+	gap: 10px; 
+}
+.tags { 
+	display: flex; 
+	align-items: center; 
+	gap: 8px; 
+	flex-wrap: wrap; 
+}
+.tag { 
+	background: #eef6ff; 
+	padding: 6px 8px; 
+	border-radius:16px; 
+	display: flex; 
+	align-items: center; 
+	gap: 6px; 
+}
+.tag 
+.remove { 
+	margin-left: 6px; 
+	color: #999; 
+}
+.tag-input { 
+	border: 1px dashed #ddd; 
+	padding: 6px 8px; 
+	border-radius: 8px; 
+}
+.add-tag { 
+	background: #409eff; 
+	color: #fff; 
+	padding: 6px 10px; 
+	border-radius:8px; 
+}
+.media-actions { 
+	display: flex; 
+	gap: 8px; 
+	margin-top: 6px; 
+}
+.media-list { 
+	display: flex; 
+	gap: 8px; 
+	flex-wrap: wrap; 
+	margin-top: 10px; 
+}
+.media-item { 
+	position: relative; 
+}
+.media-thumb { 
+	width: 120px; 
+	height: 80px; 
+	border-radius: 8px; 
+}
+.media-remove { 
+	position: absolute; 
+	right: 4px; 
+	top: 4px; 
+	background: rgba(0,0,0,0.5); 
+	color: #fff; 
+	padding: 2px 6px; 
+	border-radius: 12px; 
+	font-size: 12px; 
+}
+.emoji-picker { 
+	margin-top: 10px; 
+	padding: 8px; 
+	background: #fafafa; 
+	border-radius: 8px; 
+	display: flex; 
+	gap: 8px; 
+	flex-wrap: wrap; 
+}
+.emoji { 
+	font-size: 20px; 
+	padding: 6px; 
+}
+.submit-row { 
+	display: flex; 
+	justify-content: space-between; 
+	align-items: center; 
+	margin-top: 12px; }
+.submit-btn { 
+	background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); 
+	color: #fff; 
+	padding: 8px 18px; 
+	border-radius: 8px; 
+}
+.error { 
+	color:#e54d42; 
+}
 </style>
